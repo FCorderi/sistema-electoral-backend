@@ -90,7 +90,7 @@ class EleccionService {
     async obtenerResultadosNacionales() {
         try {
             const query = `
-        SELECT p.Color, p.Tipo, COUNT(v.Id_voto) as CantidadVotos
+        SELECT p.Color, COUNT(v.Id_voto) as CantidadVotos
         FROM Papeleta p
         JOIN Eleccion e ON p.Id_eleccion = e.Id_eleccion
         LEFT JOIN Voto v ON p.Id_papeleta = v.Id_papeleta

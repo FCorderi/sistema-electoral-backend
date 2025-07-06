@@ -68,6 +68,7 @@ CREATE TABLE Votante (
 
 CREATE TABLE Miembro_de_mesa (
     Cedula VARCHAR(8) PRIMARY KEY,
+    Credencial VARCHAR(6),
     Id_circuito_que_compone INT NOT NULL,
     Organismo VARCHAR(100),
     Rol ENUM('Presidente', 'Secretario', 'Vocal') DEFAULT 'Vocal',
