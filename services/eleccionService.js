@@ -15,13 +15,19 @@ class EleccionService {
     async obtenerPapeletas(idEleccion) {
         try {
             const query = `
-        SELECT p.*, l.Numero as NumeroLista, pt.Direccion_sede,
-               pol.Nombre_completo as NombreCandidato
+        SELECT p.Id_papeleta, p.Color, p.Id_eleccion, p.Numero_lista,
+               l.Numero as NumeroLista, 
+               pt.Direccion_sede,
+               v.Nombre_completo as NombreCandidato,
+               CASE 
+                   WHEN p.Numero_lista IS NULL THEN 'Voto en Blanco'
+                   ELSE CONCAT('Lista ', l.Numero, ' - ', v.Nombre_completo)
+               END as Descripcion
         FROM Papeleta p
         LEFT JOIN Lista l ON p.Numero_lista = l.Numero
         LEFT JOIN Partido pt ON l.Id_partido = pt.Id_partido
-        LEFT JOIN Politico pol_rel ON l.Cedula_politico_apoyado = pol_rel.Cedula
-        LEFT JOIN Votante pol ON pol_rel.Cedula = pol.Cedula
+        LEFT JOIN Politico pol ON l.Cedula_politico_apoyado = pol.Cedula
+        LEFT JOIN Votante v ON pol.Cedula = v.Cedula
         WHERE p.Id_eleccion = ?
         ORDER BY p.Id_papeleta
       `;
@@ -50,12 +56,19 @@ class EleccionService {
             }
 
             const query = `
-        SELECT p.Color, p.Tipo, COUNT(v.Id_voto) as CantidadVotos
+        SELECT p.Id_papeleta, p.Color, 
+               CASE 
+                   WHEN p.Numero_lista IS NULL THEN 'Voto en Blanco'
+                   ELSE CONCAT('Lista ', l.Numero)
+               END as Descripcion,
+               COUNT(vp.Id_voto) as CantidadVotos
         FROM Papeleta p
         JOIN Eleccion e ON p.Id_eleccion = e.Id_eleccion
-        LEFT JOIN Voto v ON p.Id_papeleta = v.Id_papeleta AND v.Id_circuito = ?
+        LEFT JOIN Lista l ON p.Numero_lista = l.Numero
+        LEFT JOIN Voto_papeleta vp ON p.Id_papeleta = vp.Id_papeleta
+        LEFT JOIN Voto v ON vp.Id_voto = v.Id_voto AND v.Id_circuito = ?
         WHERE e.Esta_activa = TRUE
-        GROUP BY p.Id_papeleta
+        GROUP BY p.Id_papeleta, p.Color, l.Numero
         ORDER BY CantidadVotos DESC
       `;
 
@@ -69,14 +82,21 @@ class EleccionService {
     async obtenerResultadosDepartamento(idDepartamento) {
         try {
             const query = `
-        SELECT p.Color, p.Tipo, COUNT(v.Id_voto) as CantidadVotos
+        SELECT p.Id_papeleta, p.Color,
+               CASE 
+                   WHEN p.Numero_lista IS NULL THEN 'Voto en Blanco'
+                   ELSE CONCAT('Lista ', l.Numero)
+               END as Descripcion,
+               COUNT(vp.Id_voto) as CantidadVotos
         FROM Papeleta p
         JOIN Eleccion e ON p.Id_eleccion = e.Id_eleccion
-        LEFT JOIN Voto v ON p.Id_papeleta = v.Id_papeleta
+        LEFT JOIN Lista l ON p.Numero_lista = l.Numero
+        LEFT JOIN Voto_papeleta vp ON p.Id_papeleta = vp.Id_papeleta
+        LEFT JOIN Voto v ON vp.Id_voto = v.Id_voto
         LEFT JOIN Circuito c ON v.Id_circuito = c.Id_circuito
         LEFT JOIN Zona z ON c.Id_zona = z.Id_zona
         WHERE e.Esta_activa = TRUE AND z.Id_departamento = ?
-        GROUP BY p.Id_papeleta
+        GROUP BY p.Id_papeleta, p.Color, l.Numero
         ORDER BY CantidadVotos DESC
       `;
 
@@ -90,12 +110,19 @@ class EleccionService {
     async obtenerResultadosNacionales() {
         try {
             const query = `
-        SELECT p.Color, p.Tipo, COUNT(v.Id_voto) as CantidadVotos
+        SELECT p.Id_papeleta, p.Color,
+               CASE 
+                   WHEN p.Numero_lista IS NULL THEN 'Voto en Blanco'
+                   ELSE CONCAT('Lista ', COALESCE(l.Numero, ''))
+               END as Descripcion,
+               COUNT(v.Id_voto) as CantidadVotos
         FROM Papeleta p
         JOIN Eleccion e ON p.Id_eleccion = e.Id_eleccion
-        LEFT JOIN Voto v ON p.Id_papeleta = v.Id_papeleta
+        LEFT JOIN Lista l ON p.Numero_lista = l.Numero
+        LEFT JOIN Voto_papeleta vp ON p.Id_papeleta = vp.Id_papeleta
+        LEFT JOIN Voto v ON vp.Id_voto = v.Id_voto
         WHERE e.Esta_activa = TRUE
-        GROUP BY p.Id_papeleta
+        GROUP BY p.Id_papeleta, p.Color, l.Numero
         ORDER BY CantidadVotos DESC
       `;
 
