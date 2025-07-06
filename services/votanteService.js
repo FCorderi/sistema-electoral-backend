@@ -83,7 +83,7 @@ class VotanteService {
 
             // Crear el voto
             const [votoResult] = await connection.execute(
-                `INSERT INTO Voto (Id_papeleta, Id_circuito, Fecha_hora_voto, Es_observado) 
+                `INSERT INTO Voto (Id_papeleta, Id_circuito, Fecha_hora, Observado) 
          VALUES (?, ?, NOW(), ?)`,
                 [idPapeleta, idCircuito, observado],
             )
@@ -92,9 +92,16 @@ class VotanteService {
 
             // Asociar votante con voto
             await connection.execute(
-                `INSERT INTO Votante_voto (Cedula, Id_voto) 
-         VALUES (?, ?)`,
+                `INSERT INTO Votante_voto (Cedula, Id_voto, Fecha_hora) 
+         VALUES (?, ?, NOW())`,
                 [cedula, idVoto],
+            )
+
+            // Asociar voto con papeleta (tabla de relación)
+            await connection.execute(
+                `INSERT INTO Voto_papeleta (Id_voto, Id_papeleta) 
+         VALUES (?, ?)`,
+                [idVoto, idPapeleta],
             )
 
             await connection.commit()
