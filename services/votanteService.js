@@ -79,7 +79,8 @@ class VotanteService {
         SELECT COUNT(*) as count 
         FROM Votante_voto vv
         JOIN Voto v ON vv.Id_voto = v.Id_voto
-        JOIN Papeleta p ON v.Id_papeleta = p.Id_papeleta
+        JOIN Voto_papeleta vp ON v.Id_voto = vp.Id_voto
+        JOIN Papeleta p ON vp.Id_papeleta = p.Id_papeleta
         WHERE vv.Cedula = ? AND p.Id_eleccion = ?
       `;
 
@@ -101,27 +102,27 @@ class VotanteService {
                 throw new Error("La mesa de votación está cerrada. No se pueden registrar más votos.")
             }
 
-            // Crear el voto
+            // Crear el voto sin Id_papeleta (se maneja en tabla intermedia)
             const [votoResult] = await connection.execute(
-                `INSERT INTO Voto (Id_papeleta, Id_circuito, Fecha_hora, Observado) 
-         VALUES (?, ?, NOW(), ?)`,
-                [idPapeleta, idCircuito, observado],
+                `INSERT INTO Voto (Id_circuito, Fecha_hora, Observado, Estado) 
+         VALUES (?, NOW(), ?, 'Válido')`,
+                [idCircuito, observado],
             )
 
             const idVoto = votoResult.insertId
+
+            // Asociar voto con papeleta a través de tabla intermedia
+            await connection.execute(
+                `INSERT INTO Voto_papeleta (Id_voto, Id_papeleta) 
+         VALUES (?, ?)`,
+                [idVoto, idPapeleta],
+            )
 
             // Asociar votante con voto
             await connection.execute(
                 `INSERT INTO Votante_voto (Cedula, Id_voto, Fecha_hora) 
          VALUES (?, ?, NOW())`,
                 [cedula, idVoto],
-            )
-
-            // Asociar voto con papeleta (tabla de relación)
-            await connection.execute(
-                `INSERT INTO Voto_papeleta (Id_voto, Id_papeleta) 
-         VALUES (?, ?)`,
-                [idVoto, idPapeleta],
             )
 
             await connection.commit()

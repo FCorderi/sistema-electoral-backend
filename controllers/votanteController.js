@@ -22,7 +22,7 @@ class VotanteController {
             res.json({
                 success: true,
                 votante: {
-                    credencial: votante.Credencial,
+                    cedula: votante.Cedula,
                     nombre: votante.Nombre_completo,
                     credencial: votante.Credencial,
                     circuito: votante.Id_circuito,

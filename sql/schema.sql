@@ -147,9 +147,7 @@ CREATE TABLE Voto (
     Observado BOOLEAN,
     Estado ENUM('Válido', 'En Blanco', 'Anulado') NOT NULL DEFAULT 'Válido',
     Id_circuito INT NOT NULL,
-    Id_papeleta INT NOT NULL,
-    FOREIGN KEY (Id_circuito) REFERENCES Circuito(Id_circuito),
-    FOREIGN KEY (Id_papeleta) REFERENCES Papeleta(Id_papeleta)
+    FOREIGN KEY (Id_circuito) REFERENCES Circuito(Id_circuito)
 );
 
 CREATE TABLE Votante_voto (
