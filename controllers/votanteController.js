@@ -4,25 +4,25 @@ const eleccionService = require("../services/eleccionService")
 class VotanteController {
     async login(req, res) {
         try {
-            const { cedula } = req.body
+            const { credencial } = req.body
 
-            if (!cedula) {
-                return res.status(400).json({ error: "Cédula es requerida" })
+            if (!credencial) {
+                return res.status(400).json({ error: "Credencial es requerida" })
             }
 
-            const votante = await votanteService.obtenerVotantePorCedula(cedula)
+            const votante = await votanteService.obtenerVotantePorCredencial(credencial)
 
             if (!votante) {
                 return res.status(404).json({ error: "Votante no encontrado" })
             }
 
             // Obtener rol del usuario
-            const rolUsuario = await votanteService.obtenerRolUsuario(cedula)
+            const rolUsuario = await votanteService.obtenerRolUsuario(credencial)
 
             res.json({
                 success: true,
                 votante: {
-                    cedula: votante.Cedula,
+                    credencial: votante.Credencial,
                     nombre: votante.Nombre_completo,
                     credencial: votante.Credencial,
                     circuito: votante.Id_circuito,

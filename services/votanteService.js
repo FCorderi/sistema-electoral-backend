@@ -23,16 +23,36 @@ class VotanteService {
         }
     }
 
-    async obtenerRolUsuario(cedula) {
+    async obtenerVotantePorCredencial(credencial) {
+        try {
+            const query = `
+        SELECT v.*, c.Id_circuito, c.Es_accesible, 
+               z.Ciudad, z.Paraje, z.Barrio, 
+               d.Nombre as Departamento
+        FROM Votante v
+        JOIN Circuito c ON v.Id_circuito = c.Id_circuito
+        JOIN Zona z ON c.Id_zona = z.Id_zona
+        JOIN Departamento d ON z.Id_departamento = d.Id_departamento
+        WHERE v.Credencial = ?
+      `;
+
+            const rows = await executeQuery(query, [credencial]);
+            return rows[0];
+        } catch (error) {
+            throw new Error("Error al obtener votante: " + error.message)
+        }
+    }
+
+    async obtenerRolUsuario(credencial) {
         try {
             // Verificar si es miembro de mesa
             const query = `
         SELECT Rol, Id_circuito_que_compone as circuito 
         FROM Miembro_de_mesa 
-        WHERE Cedula = ?
+        WHERE Credencial = ?
       `;
 
-            const mesaRows = await executeQuery(query, [cedula]);
+            const mesaRows = await executeQuery(query, [credencial]);
 
             if (mesaRows.length > 0) {
                 return {
