@@ -61,14 +61,13 @@ CREATE TABLE Votante (
     Cedula VARCHAR(8) PRIMARY KEY,
     Nombre_completo TEXT,
     Fecha_nacimiento DATE,
-    Credencial VARCHAR(6),
+    Credencial VARCHAR(8),
     Id_circuito INT NOT NULL,
     FOREIGN KEY (Id_circuito) REFERENCES Circuito(Id_circuito)
 );
 
 CREATE TABLE Miembro_de_mesa (
     Cedula VARCHAR(8) PRIMARY KEY,
-    Credencial VARCHAR(6),
     Id_circuito_que_compone INT NOT NULL,
     Organismo VARCHAR(100),
     Rol ENUM('Presidente', 'Secretario', 'Vocal') DEFAULT 'Vocal',

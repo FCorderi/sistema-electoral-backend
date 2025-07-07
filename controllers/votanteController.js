@@ -22,7 +22,7 @@ class VotanteController {
             res.json({
                 success: true,
                 votante: {
-                    credencial: votante.Credencial,
+                    cedula: votante.Cedula,
                     nombre: votante.Nombre_completo,
                     credencial: votante.Credencial,
                     circuito: votante.Id_circuito,
@@ -41,21 +41,21 @@ class VotanteController {
 
     async votar(req, res) {
         try {
-            const { cedula, idPapeleta, idCircuito } = req.body
+            const { credencial, idPapeleta, idCircuito } = req.body
 
             // Verificar si ya votó
             const eleccionActiva = await eleccionService.obtenerEleccionActiva()
-            const yaVoto = await votanteService.verificarYaVoto(cedula, eleccionActiva.Id_eleccion)
+            const yaVoto = await votanteService.verificarYaVotoPorCredencial(credencial, eleccionActiva.Id_eleccion)
 
             if (yaVoto) {
                 return res.status(400).json({ error: "Ya ha emitido su voto en esta elección" })
             }
 
             // Verificar si vota en su circuito correspondiente
-            const votante = await votanteService.obtenerVotantePorCedula(cedula)
+            const votante = await votanteService.obtenerVotantePorCredencial(credencial)
             const observado = votante.Id_circuito !== Number.parseInt(idCircuito)
 
-            const idVoto = await votanteService.registrarVoto(cedula, idPapeleta, idCircuito, observado)
+            const idVoto = await votanteService.registrarVotoPorCredencial(credencial, idPapeleta, idCircuito, observado)
 
             res.json({
                 success: true,

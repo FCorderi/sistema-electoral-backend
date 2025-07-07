@@ -45,11 +45,12 @@ class VotanteService {
 
     async obtenerRolUsuario(credencial) {
         try {
-            // Verificar si es miembro de mesa
+            // Verificar si es miembro de mesa usando JOIN con Votante
             const query = `
-        SELECT Rol, Id_circuito_que_compone as circuito 
-        FROM Miembro_de_mesa 
-        WHERE Credencial = ?
+        SELECT m.Rol, m.Id_circuito_que_compone as circuito 
+        FROM Miembro_de_mesa m
+        JOIN Votante v ON m.Cedula = v.Cedula
+        WHERE v.Credencial = ?
       `;
 
             const mesaRows = await executeQuery(query, [credencial]);
@@ -91,6 +92,25 @@ class VotanteService {
         }
     }
 
+    async verificarYaVotoPorCredencial(credencial, idEleccion) {
+        try {
+            const query = `
+        SELECT COUNT(*) as count 
+        FROM Votante_voto vv
+        JOIN Votante v ON vv.Cedula = v.Cedula
+        JOIN Voto vo ON vv.Id_voto = vo.Id_voto
+        JOIN Voto_papeleta vp ON vo.Id_voto = vp.Id_voto
+        JOIN Papeleta p ON vp.Id_papeleta = p.Id_papeleta
+        WHERE v.Credencial = ? AND p.Id_eleccion = ?
+      `;
+
+            const rows = await executeQuery(query, [credencial, idEleccion]);
+            return rows[0].count > 0;
+        } catch (error) {
+            throw new Error("Error al verificar voto: " + error.message)
+        }
+    }
+
     async registrarVoto(cedula, idPapeleta, idCircuito, observado = false) {
         const connection = await pool.getConnection()
         try {
@@ -119,6 +139,60 @@ class VotanteService {
             )
 
             // Asociar votante con voto
+            await connection.execute(
+                `INSERT INTO Votante_voto (Cedula, Id_voto, Fecha_hora) 
+         VALUES (?, ?, NOW())`,
+                [cedula, idVoto],
+            )
+
+            await connection.commit()
+            return idVoto
+        } catch (error) {
+            await connection.rollback()
+            throw error
+        } finally {
+            connection.release()
+        }
+    }
+
+    async registrarVotoPorCredencial(credencial, idPapeleta, idCircuito, observado = false) {
+        const connection = await pool.getConnection()
+        try {
+            await connection.beginTransaction()
+
+            // Primero obtener la cédula usando la credencial
+            const query = `SELECT Cedula FROM Votante WHERE Credencial = ?`
+            const [rows] = await connection.execute(query, [credencial])
+            
+            if (rows.length === 0) {
+                throw new Error("Votante no encontrado con esa credencial")
+            }
+            
+            const cedula = rows[0].Cedula
+
+            // Verificar que la mesa está abierta
+            const estadoMesa = await mesaService.obtenerEstadoMesa(idCircuito)
+            if (!estadoMesa || !estadoMesa.Esta_abierta) {
+                throw new Error("La mesa de votación está cerrada. No se pueden registrar más votos.")
+            }
+
+            // Crear el voto sin Id_papeleta (se maneja en tabla intermedia)
+            const [votoResult] = await connection.execute(
+                `INSERT INTO Voto (Id_circuito, Fecha_hora, Observado, Estado) 
+         VALUES (?, NOW(), ?, 'Válido')`,
+                [idCircuito, observado],
+            )
+
+            const idVoto = votoResult.insertId
+
+            // Asociar voto con papeleta a través de tabla intermedia
+            await connection.execute(
+                `INSERT INTO Voto_papeleta (Id_voto, Id_papeleta) 
+         VALUES (?, ?)`,
+                [idVoto, idPapeleta],
+            )
+
+            // Asociar votante con voto usando la cédula obtenida
             await connection.execute(
                 `INSERT INTO Votante_voto (Cedula, Id_voto, Fecha_hora) 
          VALUES (?, ?, NOW())`,

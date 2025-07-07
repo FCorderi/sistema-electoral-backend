@@ -83,56 +83,56 @@ VALUES
         '12345678',
         'Juan Pérez García',
         '1985-03-15',
-        '105000',
+        'ABC10500',
         1
     ),
     (
         '87654321',
         'María González López',
         '1990-07-22',
-        '115000',
+        'DEF11500',
         2
     ),
     (
         '11111111',
         'Carlos Rodríguez Silva',
         '1978-12-10',
-        '125000',
+        'GHI12500',
         3
     ),
     (
         '22222222',
         'Ana Martínez Fernández',
         '1995-05-08',
-        '135000',
+        'JKL13500',
         4
     ),
     (
         '33333333',
         'Pedro López Martín',
         '1982-09-20',
-        '106000',
+        'MNO10600',
         1
     ),
     (
         '44444444',
         'Laura Fernández Castro',
         '1988-11-15',
-        '116000',
+        'PQR11600',
         2
     ),
     (
         '55555555',
         'Diego Sánchez Ruiz',
         '1975-04-30',
-        '126000',
+        'STU12600',
         3
     ),
     (
         '66666666',
         'Carmen Vega Torres',
         '1992-12-05',
-        '136000',
+        'VWX13600',
         4
     );
 
@@ -239,28 +239,28 @@ VALUES
         '77777777',
         'Roberto Silva Méndez',
         '1980-06-12',
-        '107000',
+        'YZA10700',
         1
     ),
     (
         '88888888',
         'Patricia Morales Vega',
         '1985-08-25',
-        '117000',
+        'BCD11700',
         2
     ),
     (
         '99999999',
         'Fernando Castro López',
         '1990-03-18',
-        '127000',
+        'EFG12700',
         3
     ),
     (
         '10101010',
         'Silvia Ramírez Díaz',
         '1987-10-08',
-        '137000',
+        'HIJ13700',
         4
     );
 
@@ -284,3 +284,17 @@ VALUES
 -- Votantes comunes: 12345678, 87654321, 11111111, 77777777, 88888888, 99999999, 10101010
 -- Presidentes de mesa: 22222222, 33333333, 44444444, 55555555
 -- Secretarios de mesa: 66666666, 12345678, 87654321, 11111111
+-- 
+-- CREDENCIALES para LOGIN (formato: 3 letras + 5 números):
+-- Juan Pérez García: ABC10500
+-- María González López: DEF11500  
+-- Carlos Rodríguez Silva: GHI12500
+-- Ana Martínez Fernández (Presidente): JKL13500
+-- Pedro López Martín (Presidente): MNO10600
+-- Laura Fernández Castro (Presidente): PQR11600
+-- Diego Sánchez Ruiz (Presidente): STU12600
+-- Carmen Vega Torres (Secretario): VWX13600
+-- Roberto Silva Méndez: YZA10700
+-- Patricia Morales Vega: BCD11700
+-- Fernando Castro López: EFG12700
+-- Silvia Ramírez Díaz: HIJ13700
