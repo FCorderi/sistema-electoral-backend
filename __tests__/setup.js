@@ -1,10 +1,5 @@
 // Configuración global para los tests
-// Cargar variables de entorno específicas para testing
-// Asegurar que estamos en modo test y no hardcodear valores, trae los valores desde un archivo .env.test
-require('dotenv').config({ path: '.env.test' });
-
-// Asegurar que estamos en modo test
-process.env.NODE_ENV = 'test';
+// Las variables de entorno se configuran en jest.setup.js
 
 // Mock de console.log para tests más limpios
 global.console = {

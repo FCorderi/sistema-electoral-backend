@@ -9,6 +9,7 @@ __tests__/
 ├── app.js                          # Aplicación de test (sin servidor)
 ├── setup.js                        # Configuración global de tests
 ├── integration.test.js             # Tests de integración
+├── helpers.js                      # Utilidades de testing
 ├── controllers/                    # Tests de controladores
 │   ├── eleccionController.test.js
 │   ├── mesaController.test.js
@@ -18,7 +19,9 @@ __tests__/
 │   ├── health.test.js
 │   ├── mesaRoutes.test.js
 │   └── votanteRoutes.test.js
-└── services/                       # Tests de servicios (opcional)
+├── mocks/                         # Mocks para servicios
+│   └── services.js
+└── README.md                      # Documentación detallada
 ```
 
 ## Tipos de Tests
@@ -92,7 +95,7 @@ npm test -- __tests__/controllers/
 NODE_ENV=test
 DB_HOST=localhost
 DB_USER=root
-DB_PASSWORD=your_super_secure_root_password
+DB_PASSWORD=tu_pasword
 DB_NAME=sistema_electoral_test
 PORT=3002
 ```

@@ -21,5 +21,7 @@ module.exports = {
     testTimeout: 10000,
     verbose: true,
     detectOpenHandles: true,
-    forceExit: true
+    forceExit: true,
+    // Variables de entorno para tests
+    setupFiles: ['<rootDir>/__tests__/jest.setup.js']
 };

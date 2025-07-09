@@ -77,6 +77,7 @@ sistema-electoral-backend/
    JWT_SECRET=tu_jwt_secret_muy_seguro
    ```
 
+
 4. **Configurar la base de datos**
    
    a. Ejecutar el script de esquema:
@@ -154,13 +155,23 @@ El sistema utiliza MySQL con las siguientes entidades principales:
 
 El proyecto incluye una suite completa de tests automatizados que cubren todos los endpoints y funcionalidades principales.
 
+### Variables de Entorno para Tests.
+### ¡ CONFIGURAR TU DB_PASSWORD EN ../__tests__/jest.setup.js !
+```javascript
+NODE_ENV=test
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=tu_pasword
+DB_NAME=sistema_electoral_test
+PORT=3002
+```
+
+
 ### Estructura de Tests
 
 ```
 __tests__/
-├── jest.config.js      # Configuración de Jest
-├── .env.test          # Variables de entorno para tests
-├── generate-test-report.js # Script para generar reportes
+├── jest.setup.js      # Variables de entorno para tests
 ├── controllers/       # Tests unitarios de controladores
 ├── routes/           # Tests de integración de endpoints
 ├── mocks/            # Mocks para servicios
@@ -172,7 +183,7 @@ __tests__/
 
 ### Comandos de Testing
 
-## ¡¡ASEGURATE DE PONER LA DB_PASSWORD EN .env.test para que corran los test!!
+**Los tests están configurados para funcionar sin archivos .env adicionales**
 
 ```bash
 # Ejecutar todos los tests
