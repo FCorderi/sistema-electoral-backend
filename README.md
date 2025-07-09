@@ -150,12 +150,89 @@ El sistema utiliza MySQL con las siguientes entidades principales:
 - **Candidato**: Candidatos postulados para cada elección
 - **Voto**: Registro de votos emitidos
 
+## Testing
+
+El proyecto incluye una suite completa de tests automatizados que cubren todos los endpoints y funcionalidades principales.
+
+### Estructura de Tests
+
+```
+__tests__/
+├── jest.config.js      # Configuración de Jest
+├── .env.test          # Variables de entorno para tests
+├── generate-test-report.js # Script para generar reportes
+├── controllers/       # Tests unitarios de controladores
+├── routes/           # Tests de integración de endpoints
+├── mocks/            # Mocks para servicios
+├── app.js            # Aplicación de test
+├── setup.js          # Configuración global
+├── helpers.js        # Utilidades de testing
+└── README.md         # Documentación detallada
+```
+
+### Comandos de Testing
+
+## ¡¡ASEGURATE DE PONER LA DB_PASSWORD EN .env.test para que corran los test!!
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests con cobertura
+npm test -- --coverage
+
+# Ejecutar tests en modo watch
+npm run test:watch
+
+# Ejecutar tests específicos
+npm test -- --testPathPattern=votante
+npm test -- --testPathPattern=eleccion
+npm test -- --testPathPattern=mesa
+```
+```bash
+# Script para generar un test report
+node generate-test-report.js 
+```
+
+### Cobertura de Tests
+
+- **Controladores**: 98.85% de cobertura
+- **Rutas**: 100% de cobertura
+- **Total**: 90.75% de cobertura
+
+### Tests Incluidos
+
+#### Endpoints de Votantes
+- Login exitoso y fallido
+- Registro de votos
+- Validación de votos duplicados
+- Votos observados (fuera de circuito)
+
+#### Endpoints de Elecciones
+- Obtener elección activa
+- Obtener papeletas
+- Resultados nacionales, por departamento y circuito
+- Manejo de elecciones inexistentes
+
+#### Endpoints de Mesas
+- Estado de mesas
+- Cerrar mesas
+- Listar mesas abiertas
+- Validación de presidentes de mesa
+
+#### Tests de Integración
+- Flujo completo de votación
+- Manejo de errores HTTP
+- Validación de JSON malformado
+
 ## Desarrollo
 
 ### Scripts Disponibles
 - `npm start` - Ejecutar en producción
 - `npm run dev` - Ejecutar en desarrollo con nodemon
-- `npm test` - Ejecutar pruebas (por implementar)
+- `npm test` - Ejecutar todos los tests
+- `npm run test:watch` - Ejecutar tests en modo watch
+- `node test-runner.js <tipo>` - Ejecutar tests específicos
 
 ### Estructura de Respuestas API
 Las respuestas siguen el formato estándar:
